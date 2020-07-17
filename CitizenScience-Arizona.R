@@ -11,7 +11,7 @@ library(tidyverse)
 library(lubridate)
 
 # Load data 
-arizona_obs <- read_csv(file = "data/iNaturalist-Arizona.csv")
+arizona_obs <- read_csv(file = "data/2011-2020-iNat-Arizona.csv")
 
 # Filter data to have months March, April, May only
 arizona_spring <- arizona_obs %>%
