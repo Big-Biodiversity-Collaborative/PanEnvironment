@@ -106,7 +106,7 @@ arizona_users_ttest <- arizona_users_change %>%
   select(county, year, per_change_users) %>%
   pivot_wider(names_from = year, values_from = per_change_users)
 
-# t test on change in growth in observations
+# t test on change in growth in users
 
 users_t_test <- t.test(x = arizona_users_ttest$`2019`, 
                      y = arizona_users_ttest$`2020`, 
