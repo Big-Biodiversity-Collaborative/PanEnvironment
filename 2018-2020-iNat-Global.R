@@ -1,4 +1,4 @@
-# Analyses of USA iNaturalist data re COVID19 (%change by state)
+# Analyses of USA iNaturalist data re COVID19 (%change by nation)
 # Kathleen L Prudic
 # klprudic@arizona.edu
 # created 2020-07-09
@@ -101,21 +101,33 @@ change_global_users_plot
 # Create dataframe for observations t test
 global_obs_ttest <- global_obs_change %>% 
   select(countryCode, year, per_change_obs) %>%
-  pivot_wider(names_from = year, values_from = per_change_obs)
+  pivot_wider(names_from = year, values_from = per_change_obs) %>%
+  rename(`2018-2019` = `2019`, 
+         `2019-2020` = `2020`) 
 
 # t test on change in growth in unique observations
-obs_ttest_table <- t.test(x = global_obs_ttest$`2019`, 
-                     y = global_obs_ttest$`2020`, 
+global_obs_ttest_list <- t.test(x = global_obs_ttest$`2018-2019`, 
+                     y = global_obs_ttest$`2019-2020`, 
                      alternative = "greater",
                      paired = TRUE)
+global_obs_ttest_list
+cat(round(global_obs_ttest_list$estimate, digits = 6), " (",
+    paste0(round(as.numeric(noram_obs_ttest_list$conf.int), digits = 4), collapse = ", "),
+    ")", sep = "")
 
 # Create dataframe for users t test
 global_users_ttest <- global_users_change %>% 
   select(countryCode, year, per_change_users) %>%
-  pivot_wider(names_from = year, values_from = per_change_users)
+  pivot_wider(names_from = year, values_from = per_change_users) %>%
+  rename(`2018-2019` = `2019`, 
+         `2019-2020` = `2020`) 
 
 # t test on change in growth in unique users
-users_ttest_table <- t.test(x = global_users_ttest$`2019`, 
-                       y = global_users_ttest$`2020`,
+global_users_ttest_list <- t.test(x = global_users_ttest$`2018-2019`, 
+                       y = global_users_ttest$`2019-2020`,
                        alternative = "greater",
                        paired = TRUE)
+global_users_ttest_list
+cat(round(global_users_ttest_list$estimate, digits = 5), " (",
+    paste0(round(as.numeric(global_users_ttest_list$conf.int), digits = 4), collapse = ", "),
+    ")", sep = "")

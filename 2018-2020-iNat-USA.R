@@ -30,9 +30,9 @@ usa_obs <- global_obs[countryCode == "US"]
 # Convert to tibble, not tribble
 usa_obs_tbl <- as_tibble(usa_obs)
 
-# Count number of unique users and observations by state for 2018, 2019, 2020
-# Column names are year, month, countryCode, stateProvince, occurrenceID, recordedBy
 # Remove non-USA states
+# Column names are year, month, countryCode, stateProvince, occurrenceID, recordedBy
+# Count number of unique observations and observers by state for 2018, 2019, 2020
 usa_counts <- usa_obs_tbl %>%
   filter(nchar(stateProvince) > 0) %>%
   filter(stateProvince != "Baja California") %>%
@@ -63,6 +63,12 @@ usa_obs_change <- usa_counts %>%
   mutate(comparison = if_else(year == 2019, 
                               true = "2018-2019", 
                               false = "2019-2020"))
+
+# Calculate observation means
+usa_obs_means <- usa_obs_change %>% 
+  group_by(comparison) %>%
+  summarize(mean_obs = mean(per_change_obs))
+usa_obs_means
 
 # Plot percent change in observations
 change_usa_obs_plot <- ggplot(data = usa_obs_change, 
@@ -108,21 +114,33 @@ change_usa_users_plot
 # Create dataframe for observations t test
 usa_obs_ttest <- usa_obs_change %>% 
   select(stateProvince, year, per_change_obs) %>%
-  pivot_wider(names_from = year, values_from = per_change_obs)
+  pivot_wider(names_from = year, values_from = per_change_obs) %>%
+  rename(`2018-2019` = `2019`, 
+         `2019-2020` = `2020`) 
 
 # t test on change in growth in unique observations
-obs_t_test <- t.test(x = usa_obs_ttest$`2019`, 
-                     y = usa_obs_ttest$`2020`, 
+usa_obs_ttest_list <- t.test(x = usa_obs_ttest$`2018-2019`, 
+                     y = usa_obs_ttest$`2019-2020`, 
                      alternative = "greater",
                      paired = TRUE)
+usa_obs_ttest_list
+cat(round(usa_obs_ttest_list$estimate, digits = 6), " (",
+    paste0(round(as.numeric(usa_obs_ttest_list$conf.int), digits = 4), collapse = ", "),
+    ")", sep = "")
 
 # Create dataframe for users t test
 usa_users_ttest <- usa_users_change %>% 
   select(stateProvince, year, per_change_users) %>%
-  pivot_wider(names_from = year, values_from = per_change_users)
+  pivot_wider(names_from = year, values_from = per_change_users) %>%
+  rename(`2018-2019` = `2019`, 
+       `2019-2020` = `2020`) 
 
 # t test on change in growth in unique users
-users_t_test <- t.test(x = usa_users_ttest$`2019`, 
-                       y = usa_users_ttest$`2020`,
+usa_users_ttest_list <- t.test(x = usa_users_ttest$`2018-2019`, 
+                       y = usa_users_ttest$`2019-2020`,
                        alternative = "greater",
                        paired = TRUE)
+usa_users_ttest_list
+cat(round(usa_users_ttest_list$estimate, digits = 5), " (",
+    paste0(round(as.numeric(usa_users_ttest_list$conf.int), digits = 4), collapse = ", "),
+    ")", sep = "")
