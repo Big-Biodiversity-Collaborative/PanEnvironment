@@ -17,7 +17,7 @@ usa_users <- read_csv(file = "data/2018-2020-NPN-Observers-USA.csv")
 usa_complete <- usa_users %>%
   group_by(State) %>%
   summarize(num_year = n()) %>%
-  filter(num_year ==3)
+  filter(num_year == 3)
 
 # Remove any province/states without all three years of data
 usa_users <- usa_users %>%
@@ -27,6 +27,7 @@ usa_users <- usa_users %>%
 # by spring (Mar-May) and state
 usa_users_change <- usa_users %>% 
   group_by(State) %>%
+  arrange(Year) %>%
   mutate(prev_users = lag(Observers)) %>%
   filter(!is.na(prev_users)) %>%
   mutate(per_change_users = (((Observers/prev_users)-1) * 100)) %>%
@@ -38,7 +39,7 @@ usa_users_change <- usa_users %>%
 # Calculate means
 usa_users_means <- usa_users_change %>%
   group_by(comparison) %>%
-  summarize(mean_obs = mean(per_change_users))
+  summarize(mean_users = mean(per_change_users))
 usa_users_means
 
 # Plot percent change in users
@@ -67,3 +68,4 @@ usa_users_ttest_list
 cat(round(usa_users_ttest_list$estimate, digits = 6), " (",
     paste0(round(as.numeric(usa_users_ttest_list$conf.int), digits = 4), collapse = ", "),
     ")", sep = "")
+
