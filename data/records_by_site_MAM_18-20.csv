@@ -1,4 +1,4 @@
-﻿Site ID,State,Year of Observation Date,Distinct count of Observation ID
+﻿siteID,state,year,records_ct
 24057,-9999,2018,1
 26198,-9999,2020,16
 29749,-9999,2018,51
